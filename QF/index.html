@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
             text-align: center;
             margin-top: 50px;
         }
+
         #status {
             margin-top: 20px;
             font-size: 18px;
@@ -17,6 +19,7 @@
         }
     </style>
 </head>
+
 <body>
     <h1>Zero-Trust AI Authentication</h1>
     <p>Move your mouse or click to authenticate.</p>
@@ -59,6 +62,7 @@
                 });
 
                 const result = await response.json();
+                console.log("Server response:", result); // Debug: Log the full response
                 updateStatus(result);
             } catch (error) {
                 console.error('Error sending data to backend:', error);
@@ -82,4 +86,5 @@
         }
     </script>
 </body>
+
 </html>

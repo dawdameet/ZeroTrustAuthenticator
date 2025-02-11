@@ -31,18 +31,23 @@ def extract_features(data):
     # Example features for mouse movements
     df['mouse_speed'] = np.sqrt(df[df['type'] == 'mouse']['x'].diff()**2 + df[df['type'] == 'mouse']['y'].diff()**2) / df[df['type'] == 'mouse']['timestamp'].diff()
 
+    # Replace NaN or infinite values with 0
+    df['mouse_speed'] = df['mouse_speed'].fillna(0).replace([np.inf, -np.inf], 0)
+
     # Aggregate features
     features = {
         'avg_mouse_speed': df['mouse_speed'].mean(),
         'click_frequency': df[df['type'] == 'click'].shape[0] / df.shape[0]
     }
     return pd.DataFrame([features])
-
 # Normalize features
 def normalize_features(features):
     scaler = StandardScaler()
-    return scaler.fit_transform(features)
-
+    scaled_features = scaler.fit_transform(features)
+    
+    # Convert back to DataFrame with feature names
+    feature_names = ['avg_mouse_speed', 'click_frequency']
+    return pd.DataFrame(scaled_features, columns=feature_names)
 # Generate OTP
 def generate_otp(secret_key):
     totp = pyotp.TOTP(secret_key)
