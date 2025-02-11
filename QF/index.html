@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zero-Trust Authentication</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #status {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Zero-Trust AI Authentication</h1>
+    <p>Move your mouse or click to authenticate.</p>
+    <div id="status">Waiting for user interaction...</div>
+
+    <script>
+        const apiUrl = 'http://localhost:5000/authenticate'; // Flask backend endpoint
+
+        // Capture Mouse Movements
+        document.addEventListener('mousemove', (event) => {
+            const data = {
+                type: 'mouse',
+                x: event.clientX,
+                y: event.clientY,
+                timestamp: Date.now()
+            };
+
+            sendToBackend(data);
+        });
+
+        // Capture Mouse Clicks
+        document.addEventListener('click', (event) => {
+            const data = {
+                type: 'click',
+                x: event.clientX,
+                y: event.clientY,
+                timestamp: Date.now()
+            };
+
+            sendToBackend(data);
+        });
+
+        // Send data to Flask backend
+        async function sendToBackend(data) {
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                updateStatus(result);
+            } catch (error) {
+                console.error('Error sending data to backend:', error);
+                updateStatus({ status: 'error', message: 'Failed to connect to server.' });
+            }
+        }
+
+        // Update status on the page
+        function updateStatus(result) {
+            const statusDiv = document.getElementById('status');
+            if (result.status === 'authenticated') {
+                statusDiv.innerHTML = '✅ Authenticated successfully!';
+                statusDiv.style.color = 'green';
+            } else if (result.status === 'anomaly_detected') {
+                statusDiv.innerHTML = '⚠️ Anomaly detected! Check your phone for OTP.';
+                statusDiv.style.color = 'orange';
+            } else if (result.status === 'error') {
+                statusDiv.innerHTML = '❌ Error: ' + result.message;
+                statusDiv.style.color = 'red';
+            }
+        }
+    </script>
+</body>
+</html>

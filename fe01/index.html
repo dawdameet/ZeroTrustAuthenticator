@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Behavioral Data Collection</title>
+</head>
+<body>
+    <h1>Zero-Trust Authentication - Behavioral Data Collection</h1>
+    <p>Type and move your mouse to collect behavioral data.</p>
+
+    <script>
+        const apiUrl = 'http://localhost:5000/collect'; // Flask backend endpoint
+        let lastKeyTime = null;
+
+        // Capture Keystrokes
+        document.addEventListener('keydown', (event) => {
+            const currentTime = Date.now();
+            const keyPressDuration = lastKeyTime ? currentTime - lastKeyTime : 0;
+            lastKeyTime = currentTime;
+
+            const data = {
+                type: 'key',
+                key: event.key,
+                timestamp: currentTime,
+                duration: keyPressDuration
+            };
+
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        });
+
+        // Capture Mouse Movements
+        document.addEventListener('mousemove', (event) => {
+            const data = {
+                type: 'mouse',
+                x: event.clientX,
+                y: event.clientY,
+                timestamp: Date.now()
+            };
+
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        });
+
+        // Capture Mouse Clicks
+        document.addEventListener('click', (event) => {
+            const data = {
+                type: 'click',
+                x: event.clientX,
+                y: event.clientY,
+                timestamp: Date.now()
+            };
+
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+        });
+    </script>
+</body>
+</html>
